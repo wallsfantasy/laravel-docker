@@ -1,0 +1,32 @@
+version: '2'
+services:
+
+    nginx:
+        image: nginx:stable-alpine
+        volumes:
+            - ./docker/dev/nginx/nginx.conf:/etc/nginx/nginx.conf
+            - ./docker/dev/nginx/vhost.fpm.conf:/etc/nginx/conf.d/default.conf
+            - ./docker/dev/nginx/log:/var/log/nginx
+            - ./source:/var/www/html
+        ports:
+            - "8080:80"
+
+    fpm:
+        build: ./docker/dev/fpm
+        volumes:
+            - ./docker/dev/fpm/fpm.conf:/etc/php7/php-fpm.d/zzz-custom.conf
+            - ./docker/dev/fpm/log:/var/log/php7
+            - ./source:/var/www/html
+        ports:
+            - "9000"
+
+    postgres:
+        image: postgres:alpine
+        volumes:
+            - ./docker/dev/postgres/data:/var/lib/postgresql/data
+        ports:
+            - "5432"
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+
